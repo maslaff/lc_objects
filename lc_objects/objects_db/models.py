@@ -30,11 +30,24 @@ class Organizations(models.Model):
     bank = models.CharField(max_length=100)
 
 
-class Objects(models.Model):
+class LCObjects(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=120)
     organization_id = models.ForeignKey(Organizations, on_delete=models.CASCADE)
     contact_person = models.ManyToManyField(Persons)
+
+
+class SystemTypes(models.Model):
+    type_name = models.CharField(max_length=80)
+    abbr = models.CharField(max_length=30)
+    description = models.TextField()
+
+
+class Systems(models.Model):
+    id_object = models.ForeignKey(LCObjects, on_delete=models.CASCADE)
+    id_system_type = models.ForeignKey(SystemTypes, on_delete=models.CASCADE)
+    description = models.TextField()
+    documentation_path = models.FileField()
 
 
 # ---------------------- FAS / ALR
@@ -48,7 +61,7 @@ class TypeFSS(models.Model):
     name = models.CharField(max_length=50)
 
 
-class ControlPanelModel(models.Model):
+class ControlPanelModels(models.Model):
     class Meta:
         # for naming you table
         db_table = "Модели ППКОП"
@@ -60,9 +73,9 @@ class ControlPanelModel(models.Model):
     )
 
 
-class ControlPanel(models.Model):
+class ControlPanels(models.Model):
     model = models.ForeignKey(
-        ControlPanelModel, verbose_name=("ППКОП"), on_delete=models.CASCADE
+        ControlPanelModels, verbose_name=("ППКОП"), on_delete=models.CASCADE
     )
     admin_pass = models.CharField(max_length=30)
     operator_pass = models.CharField(max_length=30)
@@ -72,53 +85,33 @@ class ControlPanel(models.Model):
     configuration_file = models.FileField()
 
 
-class FasSequrity(models.Model):
-    id_object = models.ForeignKey(Objects, on_delete=models.CASCADE)
-    main_control_device_id = models.ForeignKey(ControlPanel, on_delete=models.CASCADE)
-    description = models.TextField()
-    documentation_path = models.FileField()
-
-
-class AlrSequrity(models.Model):
-    id_object = models.ForeignKey(Objects, on_delete=models.CASCADE)
-    main_control_device_id = models.ForeignKey(ControlPanel, on_delete=models.CASCADE)
-    description = models.TextField()
-    documentation_path = models.FileField()
-
-
 # ---------------------- LAN/SCS
 
 
-class LANSystem(models.Model):
-    id_object = models.ForeignKey(Objects, on_delete=models.CASCADE)
-    description = models.TextField()
-    documentation_path = models.FileField()
-    provider = models.CharField(max_length=50)
-
-
-class ManufacturerNetDev(models.Model):
+class NetDevManufacturers(models.Model):
     name = models.CharField(max_length=50)
 
 
-class TypeNetDev(models.Model):
+class NetDevTypes(models.Model):
     name = models.CharField(max_length=50)
 
 
-class NWD_Model(models.Model):
+class NWD_Models(models.Model):
     class Meta:
         # for naming you table
         db_table = "Модели сетевых устройств"
 
+    id_system = models.ForeignKey(Systems, on_delete=models.CASCADE)
     model_name = models.CharField(max_length=50)
-    type_id = models.ForeignKey(TypeNetDev, on_delete=models.CASCADE)
+    type_id = models.ForeignKey(NetDevTypes, on_delete=models.CASCADE)
     nwd_manufacturer_id = models.ForeignKey(
-        ManufacturerNetDev, on_delete=models.CASCADE
+        NetDevManufacturers, on_delete=models.CASCADE
     )
 
 
-class NetworkDevice(models.Model):
-    id_scs_lan_system = models.ForeignKey(LANSystem, on_delete=models.CASCADE)
-    id_network_device_model = models.ForeignKey(NWD_Model, on_delete=models.CASCADE)
+class NetworkDevices(models.Model):
+    id_system = models.ForeignKey(Systems, on_delete=models.CASCADE)
+    id_network_device_model = models.ForeignKey(NWD_Models, on_delete=models.CASCADE)
     serial_number = models.CharField(max_length=50)
     version = models.CharField(max_length=50)
     mac_address = models.CharField(validators=[mac_regex], max_length=50, blank=True)
@@ -132,21 +125,15 @@ class NetworkDevice(models.Model):
 # ---------------------- CCTV
 
 
-class CCTVSystem(models.Model):
-    id_object = models.ForeignKey(Objects, on_delete=models.CASCADE)
-    description = models.TextField()
-    documentation_path = models.FileField()
-
-
-class ManufacturerCCTV(models.Model):
+class CCTVManufacturers(models.Model):
     name = models.CharField(max_length=50)
 
 
-class TypeCCTV(models.Model):
+class CCTVTypes(models.Model):
     name = models.CharField(max_length=50)
 
 
-class CCTVRecorder(models.Model):
+class CCTVRecorders(models.Model):
     model = models.CharField(max_length=50)
     admin_login = models.CharField(max_length=50)
     admin_pass = models.CharField(max_length=50)
@@ -155,18 +142,18 @@ class CCTVRecorder(models.Model):
     mac_address = models.CharField(validators=[mac_regex], max_length=50, blank=True)
     serial_number = models.CharField(max_length=50)
     id_cctv_system_manufacturer = models.ForeignKey(
-        ManufacturerCCTV, on_delete=models.CASCADE
+        CCTVManufacturers, on_delete=models.CASCADE
     )
-    id_cctv_system_type = models.ForeignKey(TypeCCTV, on_delete=models.CASCADE)
-    id_cctv_system = models.ForeignKey(CCTVSystem, on_delete=models.CASCADE)
+    id_cctv_system_type = models.ForeignKey(CCTVTypes, on_delete=models.CASCADE)
+    id_system = models.ForeignKey(Systems, on_delete=models.CASCADE)
 
 
-class CCTVCamera(models.Model):
-    id_cctv_system_type = models.ForeignKey(TypeCCTV, on_delete=models.CASCADE)
+class CCTVCameras(models.Model):
+    id_cctv_system_type = models.ForeignKey(CCTVTypes, on_delete=models.CASCADE)
     id_cctv_system_manufacturer = models.ForeignKey(
-        ManufacturerCCTV, on_delete=models.CASCADE
+        CCTVManufacturers, on_delete=models.CASCADE
     )
-    id_videorecorder = models.ForeignKey(CCTVRecorder, on_delete=models.CASCADE)
+    id_videorecorder = models.ForeignKey(CCTVRecorders, on_delete=models.CASCADE)
     model_name = models.CharField(max_length=50)
     serial_number = models.CharField(max_length=50)
     mac_address = models.CharField(validators=[mac_regex], max_length=50, blank=True)
