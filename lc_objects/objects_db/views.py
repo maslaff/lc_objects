@@ -115,10 +115,10 @@ class CamerasViewSet(Perm, viewsets.ModelViewSet):
         return CCTVCameras.objects.filter(videorecorder=self.kwargs["videorecorder_pk"])
 
     def create(self, request, *args, **kwargs):
-        request.data._mutable = True
-        data = request.data
+        # request.data._mutable = True
+        data = request.data.copy()
         data["videorecorder"] = self.kwargs["videorecorder_pk"]
-        serializer = CCTVCameraSerializer(data=request.data)
+        serializer = CCTVCameraSerializer(data=data)
         try:
             serializer.is_valid(raise_exception=True)
             serializer.save()
