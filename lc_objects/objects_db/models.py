@@ -40,6 +40,8 @@ class LCObjects(models.Model):
 class SystemTypes(models.Model):
     type_name = models.CharField(max_length=80)
     abbr = models.CharField(max_length=30)
+    name = models.CharField(max_length=40, blank=True)
+    table = models.CharField(max_length=40)
     description = models.TextField()
 
 
@@ -74,6 +76,7 @@ class ControlPanelModels(models.Model):
 
 
 class ControlPanels(models.Model):
+    system = models.ForeignKey(Systems, on_delete=models.CASCADE)
     model = models.ForeignKey(
         ControlPanelModels, verbose_name=("ППКОП"), on_delete=models.CASCADE
     )
@@ -101,7 +104,6 @@ class NWD_Models(models.Model):
         # for naming you table
         db_table = "Модели сетевых устройств"
 
-    id_system = models.ForeignKey(Systems, on_delete=models.CASCADE)
     model_name = models.CharField(max_length=50)
     type_id = models.ForeignKey(NetDevTypes, on_delete=models.CASCADE)
     nwd_manufacturer_id = models.ForeignKey(
@@ -110,8 +112,8 @@ class NWD_Models(models.Model):
 
 
 class NetworkDevices(models.Model):
-    id_system = models.ForeignKey(Systems, on_delete=models.CASCADE)
-    id_network_device_model = models.ForeignKey(NWD_Models, on_delete=models.CASCADE)
+    system = models.ForeignKey(Systems, on_delete=models.CASCADE)
+    network_device_model = models.ForeignKey(NWD_Models, on_delete=models.CASCADE)
     serial_number = models.CharField(max_length=50)
     version = models.CharField(max_length=50)
     mac_address = models.CharField(validators=[mac_regex], max_length=50, blank=True)
@@ -141,19 +143,20 @@ class CCTVRecorders(models.Model):
     ip_mask = models.GenericIPAddressField(protocol="IPv4")
     mac_address = models.CharField(validators=[mac_regex], max_length=50, blank=True)
     serial_number = models.CharField(max_length=50)
-    id_cctv_system_manufacturer = models.ForeignKey(
+    cctv_system_manufacturer = models.ForeignKey(
         CCTVManufacturers, on_delete=models.CASCADE
     )
-    id_cctv_system_type = models.ForeignKey(CCTVTypes, on_delete=models.CASCADE)
-    id_system = models.ForeignKey(Systems, on_delete=models.CASCADE)
+    cctv_system_type = models.ForeignKey(CCTVTypes, on_delete=models.CASCADE)
+    system = models.ForeignKey(Systems, on_delete=models.CASCADE)
+    # cameras = models.fiel
 
 
 class CCTVCameras(models.Model):
-    id_cctv_system_type = models.ForeignKey(CCTVTypes, on_delete=models.CASCADE)
-    id_cctv_system_manufacturer = models.ForeignKey(
+    cctv_system_type = models.ForeignKey(CCTVTypes, on_delete=models.CASCADE)
+    cctv_system_manufacturer = models.ForeignKey(
         CCTVManufacturers, on_delete=models.CASCADE
     )
-    id_videorecorder = models.ForeignKey(CCTVRecorders, on_delete=models.CASCADE)
+    videorecorder = models.ForeignKey(CCTVRecorders, on_delete=models.CASCADE)
     model_name = models.CharField(max_length=50)
     serial_number = models.CharField(max_length=50)
     mac_address = models.CharField(validators=[mac_regex], max_length=50, blank=True)
