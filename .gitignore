@@ -163,4 +163,4 @@ cython_debug/
 *.bak
 *.sql
 .vscode/drf_snippets.code-snippets
-lc_objects/media
+lc_objects/media/
