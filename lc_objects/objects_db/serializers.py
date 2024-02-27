@@ -38,7 +38,7 @@ class ObjectSystemCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Systems
         fields = ("id_system_type", "description", "documentation_path")
-        depth = 1
+#        depth = 1
 
 
 class ObjSysDeviceSerializer(serializers.ModelSerializer):
