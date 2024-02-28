@@ -65,7 +65,6 @@ class TypeFSS(models.Model):
 
 class ControlPanelModels(models.Model):
     class Meta:
-        # for naming you table
         db_table = "Модели ППКОП"
 
     model_name = models.CharField(max_length=50)
@@ -101,7 +100,6 @@ class NetDevTypes(models.Model):
 
 class NWD_Models(models.Model):
     class Meta:
-        # for naming you table
         db_table = "Модели сетевых устройств"
 
     model_name = models.CharField(max_length=50)
@@ -148,7 +146,6 @@ class CCTVRecorders(models.Model):
     )
     cctv_system_type = models.ForeignKey(CCTVTypes, on_delete=models.CASCADE)
     system = models.ForeignKey(Systems, on_delete=models.CASCADE)
-    # cameras = models.fiel
 
 
 class CCTVCameras(models.Model):

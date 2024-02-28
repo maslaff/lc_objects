@@ -19,7 +19,6 @@ router.register(r"lansys/types", views.NetDevTypeViewSet)
 router.register(r"lansys/models", views.NWD_ModelViewSet)
 router.register(r"cctvsys/manufacturers", views.CCTVManufacturerViewSet)
 router.register(r"cctvsys/types", views.CCTVTypeViewSet)
-# router.register(r"cctvsys/models", views.CCTVRecorderViewSet)
 
 router.register(r"lcobjects", views.LCObjectViewSet, basename="lcobjects")
 
