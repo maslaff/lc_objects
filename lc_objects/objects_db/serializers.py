@@ -51,7 +51,6 @@ class ObjSysDeviceSerializer(serializers.ModelSerializer):
         model = None
         # fields = "__all__"
         exclude = []
-        # depth = 1
 
     # def get_field_names(self, declared_fields, info):
     #     expanded_fields = super(ObjSysDeviceSerializer, self).get_field_names(
@@ -168,7 +167,6 @@ class CCTVCameraSerializer(serializers.ModelSerializer):
     class Meta:
         model = CCTVCameras
         fields = "__all__"
-        depth = 1
 
 
 class CCTVCameraCreateSerializer(serializers.ModelSerializer):
